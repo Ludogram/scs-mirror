@@ -49,9 +49,36 @@ MonoBehaviour:
     isLink: 0
     isGlobal: 0
     propertyHeight: 0
+  - uniqueID: 6427
+    ID: New Complex Var
+    type: 1
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    hasMin: 0
+    hasMax: 0
+    minInt: 0
+    maxInt: 0
+    minFloat: 0
+    maxFloat: 0
+    isStatic: 0
+    isRandom: 0
+    isLink: 1
+    isGlobal: 0
+    propertyHeight: 0
   intersceneVariablesSO: {fileID: 2931021990422469653, guid: f62f165c943adfc4fa080ebb6a56e229, type: 2}
   sceneObjectSettings: {fileID: -6873954747759285107, guid: f62f165c943adfc4fa080ebb6a56e229, type: 2}
-  complexSceneVars: []
+  complexSceneVars:
+  - sceneVariablesSO: {fileID: 11400000}
+    uniqueID: 6427
+    ID: New Complex Var
+    type: 1
+    conditions: []
+    intTotals: []
+    floatTotals: []
+    sentences: []
+    propertyHeight: 0
   currentPage: 0
   currentBalancingSheetIndex: 0
   sceneBalancingSheets: []

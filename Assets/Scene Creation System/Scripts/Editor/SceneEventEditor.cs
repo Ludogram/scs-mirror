@@ -17,7 +17,7 @@ namespace Dhs5.SceneCreation
         protected SerializedProperty paramedEventProperty;
         protected SerializedProperty uEventProperty;
 
-        protected string[] pageNames = new string[] { "Condition", "Scene Action", "UnityEvent", "Parametered Event" };
+        protected string[] pageNames = new string[] { "Condition", "Scene Action", "UnityEvent" };//, "Parametered Event" };
 
         protected float height;
 
