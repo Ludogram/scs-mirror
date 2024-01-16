@@ -31,6 +31,24 @@ MonoBehaviour:
     isLink: 0
     isGlobal: 0
     propertyHeight: 0
+  - uniqueID: 2852
+    ID: Test Float
+    type: 2
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    hasMin: 1
+    hasMax: 1
+    minInt: 0
+    maxInt: 0
+    minFloat: 0
+    maxFloat: 10
+    isStatic: 0
+    isRandom: 0
+    isLink: 0
+    isGlobal: 0
+    propertyHeight: 0
   intersceneVariablesSO: {fileID: 2931021990422469653, guid: f62f165c943adfc4fa080ebb6a56e229, type: 2}
   sceneObjectSettings: {fileID: -6873954747759285107, guid: f62f165c943adfc4fa080ebb6a56e229, type: 2}
   complexSceneVars: []

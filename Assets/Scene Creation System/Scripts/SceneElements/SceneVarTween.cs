@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 namespace Dhs5.SceneCreation
 {
@@ -106,6 +107,10 @@ namespace Dhs5.SceneCreation
             }
             set
             {
+                if (!NetworkServer.active)
+                {
+                    Debug.LogWarning("Modifying SceneVarTween value while being a client");
+                }
                 if (!IsActive)
                 {
                     InactiveTween();

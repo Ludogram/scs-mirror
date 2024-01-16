@@ -94,7 +94,6 @@ namespace Dhs5.SceneCreation
             if (sceneObjects.ContainsKey(sceneObject.netId)) return;
 
             sceneObjects.Add(sceneObject.netId, sceneObject);
-            Debug.Log("register " + sceneObject + " with id : " + sceneObject.netId);
 
             if (sceneObject is IOnStartScene onStartSO) onStartSceneObjects.Add(onStartSO);
             if (sceneObject is IOnChangeScene onChangeSO) onChangeSceneObjects.Add(onChangeSO);
