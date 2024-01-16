@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Scripting;
+using Mirror;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -87,7 +88,7 @@ namespace Dhs5.SceneCreation
         /// </summary>
         public static event Action GameOverEvent;
 
-        protected virtual void Start()
+        public virtual void StartNetworkScene()
         {
             SetBalancingIndex();
 
@@ -166,7 +167,7 @@ namespace Dhs5.SceneCreation
         /// </summary>
         protected void SetSceneVars()
         {
-            SceneState.SetSceneVars(sceneVariablesSO, BalancingIndex);
+            if (NetworkServer.active) SceneState.SetSceneVars(sceneVariablesSO, BalancingIndex);
         }
         #endregion
 

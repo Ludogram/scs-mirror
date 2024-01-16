@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Dhs5.SceneCreation
 {
     #region Enums
     [Serializable]
-    public enum SceneVarType
+    public enum SceneVarType : byte
     {
         BOOL, INT, FLOAT, STRING, EVENT
     }
@@ -62,7 +63,7 @@ namespace Dhs5.SceneCreation
 
     public static class SceneState
     {
-        private static List<BaseSceneObject> sceneObjects = new();
+        private static Dictionary<uint, BaseSceneObject> sceneObjects = new();
 
         //private static event Action onStartScene;
         //private static event Action onChangeScene;
@@ -83,11 +84,17 @@ namespace Dhs5.SceneCreation
         //private static Dictionary<int, object> FormerValues = new();
 
         #region Scene Object Registration
+        public static bool TryGetSceneObject(uint id, out BaseSceneObject sceneObject)
+        {
+            return sceneObjects.TryGetValue(id, out sceneObject);
+        }
+
         public static void Register(BaseSceneObject sceneObject)
         {
-            if (sceneObjects.Contains(sceneObject)) return;
+            if (sceneObjects.ContainsKey(sceneObject.netId)) return;
 
-            sceneObjects.Add(sceneObject);
+            sceneObjects.Add(sceneObject.netId, sceneObject);
+            Debug.Log("register " + sceneObject + " with id : " + sceneObject.netId);
 
             if (sceneObject is IOnStartScene onStartSO) onStartSceneObjects.Add(onStartSO);
             if (sceneObject is IOnChangeScene onChangeSO) onChangeSceneObjects.Add(onChangeSO);
@@ -109,9 +116,9 @@ namespace Dhs5.SceneCreation
         }
         public static void Unregister(BaseSceneObject sceneObject)
         {
-            if (!sceneObjects.Contains(sceneObject)) return;
+            if (!sceneObjects.ContainsKey(sceneObject.netId)) return;
 
-            sceneObjects.Remove(sceneObject);
+            sceneObjects.Remove(sceneObject.netId);
 
             if (sceneObject is IOnStartScene onStartSO) onStartSceneObjects.Remove(onStartSO);
             if (sceneObject is IOnChangeScene onChangeSO) onChangeSceneObjects.Remove(onChangeSO);
@@ -415,84 +422,146 @@ namespace Dhs5.SceneCreation
             //}
         }
 
+        internal static void SetVarValue(int varUniqueID, object value, BaseSceneObject sender)
+        {
+            // INterscenestate
+
+            Debug.Log("set var " + varUniqueID + " to " + value + " by " + sender);
+
+            SaveFormerValues();
+            SceneManager.NewtorkSceneVarContainer.SetSceneVar(varUniqueID, value);
+            ChangedVar(varUniqueID, sender, null);
+        }
+        internal static void SetBoolVar(int varUniqueID, bool value, BaseSceneObject sender)
+        {
+            // INterscenestate
+
+            Debug.Log("set bool " + varUniqueID + " to " + value + " by " + sender);
+
+            SaveFormerValues();
+            SceneVar sVar = GetSceneVar(varUniqueID);
+            sVar.BoolValue = value;
+            ChangedVar(varUniqueID, sender, null);
+        }
+        internal static void SetIntVar(int varUniqueID, int value, BaseSceneObject sender)
+        {
+            // INterscenestate
+
+            Debug.Log("set int " + varUniqueID + " to " + value + " by " + sender);
+
+            SaveFormerValues();
+            SceneVar sVar = GetSceneVar(varUniqueID);
+            sVar.IntValue = value;
+            ChangedVar(varUniqueID, sender, null);
+        }
+        internal static void SetFloatVar(int varUniqueID, float value, BaseSceneObject sender)
+        {
+            // INterscenestate
+
+            Debug.Log("set float " + varUniqueID + " to " + value + " by " + sender);
+
+            SaveFormerValues();
+            SceneVar sVar = GetSceneVar(varUniqueID);
+            sVar.FloatValue = value;
+            ChangedVar(varUniqueID, sender, null);
+        }
+        internal static void SetStringVar(int varUniqueID, string value, BaseSceneObject sender)
+        {
+            // INterscenestate
+
+            Debug.Log("set string " + varUniqueID + " to " + value + " by " + sender);
+
+            SaveFormerValues();
+            SceneVar sVar = GetSceneVar(varUniqueID);
+            sVar.StringValue = value;
+            ChangedVar(varUniqueID, sender, null);
+        }
+
         internal static void ModifyBoolVar(int varUniqueID, BoolOperation op, bool param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyBoolVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
-            if (CanModifyVar(varUniqueID, SceneVarType.BOOL, out SceneVar var))
-            {
-                SaveFormerValues();
-                if (CalculateBool(ref var, op, param))
-                    ChangedVar(varUniqueID, sender, context);
-                return;
-            }
+            SceneManager.NewtorkSceneVarContainer.ModifyBoolVar(varUniqueID, op, param, sender, context);
+            //if (IntersceneState.IsGlobalVar(varUniqueID))
+            //{
+            //    IntersceneState.ModifyBoolVar(varUniqueID, op, param, sender, context);
+            //    return;
+            //}
+            //
+            //if (CanModifyVar(varUniqueID, SceneVarType.BOOL, out SceneVar var))
+            //{
+            //    SaveFormerValues();
+            //    if (CalculateBool(ref var, op, param))
+            //        ChangedVar(varUniqueID, sender, context);
+            //    return;
+            //}
         }
         internal static void ModifyIntVar(int varUniqueID, IntOperation op, int param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyIntVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
-            if (CanModifyVar(varUniqueID, SceneVarType.INT, out SceneVar var))
-            {
-                SaveFormerValues();
-                if (CalculateInt(ref var, op, param))
-                    ChangedVar(varUniqueID, sender, context);
-                return;
-            }
+            SceneManager.NewtorkSceneVarContainer.ModifyIntVar(varUniqueID, op, param, sender, context);
+            //if (IntersceneState.IsGlobalVar(varUniqueID))
+            //{
+            //    IntersceneState.ModifyIntVar(varUniqueID, op, param, sender, context);
+            //    return;
+            //}
+            //
+            //if (CanModifyVar(varUniqueID, SceneVarType.INT, out SceneVar var))
+            //{
+            //    Debug.Log("modify int " + varUniqueID);
+            //    SaveFormerValues();
+            //    if (CalculateInt(ref var, op, param))
+            //        ChangedVar(varUniqueID, sender, context);
+            //    Debug.Log("int " + varUniqueID + " modified");
+            //    return;
+            //}
         }
         internal static void ModifyFloatVar(int varUniqueID, FloatOperation op, float param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyFloatVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
-            if (CanModifyVar(varUniqueID, SceneVarType.FLOAT, out SceneVar var))
-            {
-                SaveFormerValues();
-                if (CalculateFloat(ref var, op, param))
-                    ChangedVar(varUniqueID, sender, context);
-                return;
-            }
+            SceneManager.NewtorkSceneVarContainer.ModifyFloatVar(varUniqueID, op, param, sender, context);
+            //if (IntersceneState.IsGlobalVar(varUniqueID))
+            //{
+            //    IntersceneState.ModifyFloatVar(varUniqueID, op, param, sender, context);
+            //    return;
+            //}
+            //
+            //if (CanModifyVar(varUniqueID, SceneVarType.FLOAT, out SceneVar var))
+            //{
+            //    SaveFormerValues();
+            //    if (CalculateFloat(ref var, op, param))
+            //        ChangedVar(varUniqueID, sender, context);
+            //    return;
+            //}
         }
         internal static void ModifyStringVar(int varUniqueID, StringOperation op, string param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyStringVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
-            if (CanModifyVar(varUniqueID, SceneVarType.STRING, out SceneVar var))
-            {
-                SaveFormerValues();
-                if (CalculateString(ref var, op, param))
-                    ChangedVar(varUniqueID, sender, context);
-                return;
-            }
+            SceneManager.NewtorkSceneVarContainer.ModifyStringVar(varUniqueID, op, param, sender, context);
+            //if (IntersceneState.IsGlobalVar(varUniqueID))
+            //{
+            //    IntersceneState.ModifyStringVar(varUniqueID, op, param, sender, context);
+            //    return;
+            //}
+            //
+            //if (CanModifyVar(varUniqueID, SceneVarType.STRING, out SceneVar var))
+            //{
+            //    SaveFormerValues();
+            //    if (CalculateString(ref var, op, param))
+            //        ChangedVar(varUniqueID, sender, context);
+            //    return;
+            //}
         }
         internal static void TriggerEventVar(int varUniqueID, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.TriggerEventVar(varUniqueID, sender, context);
-                return;
-            }
-
-            if (CanModifyVar(varUniqueID, SceneVarType.EVENT, out SceneVar var))
-            {
-                SaveFormerValues();
-                ChangedVar(varUniqueID, sender, context);
-                return;
-            }
+            SceneManager.NewtorkSceneVarContainer.TriggerEventVar(varUniqueID, sender, context);
+            //if (IntersceneState.IsGlobalVar(varUniqueID))
+            //{
+            //    IntersceneState.TriggerEventVar(varUniqueID, sender, context);
+            //    return;
+            //}
+            //
+            //if (CanModifyVar(varUniqueID, SceneVarType.EVENT, out SceneVar var))
+            //{
+            //    SaveFormerValues();
+            //    ChangedVar(varUniqueID, sender, context);
+            //    return;
+            //}
         }
         #endregion
 

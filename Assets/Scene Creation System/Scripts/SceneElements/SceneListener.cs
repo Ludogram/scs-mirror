@@ -134,6 +134,7 @@ namespace Dhs5.SceneCreation
         [SerializeField] protected Condition condition;
 
         [SerializeField] protected bool debug = false;
+        [SerializeField] protected bool initialTrigger = false;
         [SerializeField] protected float propertyHeight;
 
         #region Event Subscription
@@ -176,7 +177,7 @@ namespace Dhs5.SceneCreation
         #region Utility
         private bool VerifyConditions(SceneEventParam param)
         {
-            return condition.VerifyCondition(param);
+            return (param.Sender != null || initialTrigger) && condition.VerifyCondition(param);
         }
         protected abstract void Trigger(SceneEventParam _param);
         #endregion

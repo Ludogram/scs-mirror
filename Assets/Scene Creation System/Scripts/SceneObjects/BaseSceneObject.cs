@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Scripting;
 using System.Text;
+using Mirror;
 
 namespace Dhs5.SceneCreation
 {
@@ -28,7 +29,8 @@ namespace Dhs5.SceneCreation
         public void OnGameOver();
     }
 
-    public abstract class BaseSceneObject : MonoBehaviour, SceneState.ISceneLogableWithChild, SceneState.ISceneVarDependantWithChild
+    [RequireComponent(typeof(NetworkIdentity))]
+    public abstract class BaseSceneObject : NetworkBehaviour, SceneState.ISceneLogableWithChild, SceneState.ISceneVarDependantWithChild
     {
         [SerializeField, HideInInspector] protected SceneVariablesSO sceneVariablesSO;
         public SceneVariablesSO SceneVariablesSO => sceneVariablesSO;
@@ -67,10 +69,15 @@ namespace Dhs5.SceneCreation
             OnSceneObjectAwake();
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            SceneState.Register(this);
+        }
+
         private void OnEnable()
         {
-            SceneState.Register(this);
-
             StartSubscription();
             EnableScriptables();
 
@@ -86,8 +93,10 @@ namespace Dhs5.SceneCreation
             OnSceneObjectDisable();
         }
 
-        private void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
+
             if (GetSceneVariablesSO())
             {
                 UpdateSceneVariables();

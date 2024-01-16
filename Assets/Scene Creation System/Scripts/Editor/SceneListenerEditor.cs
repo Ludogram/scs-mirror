@@ -104,6 +104,12 @@ namespace Dhs5.SceneCreation
                 Rect debugTogglePosition = new(position.x, position.y + propertyOffset, position.width, EditorGUIUtility.singleLineHeight);
                 EditorGUI.PropertyField(debugTogglePosition, property.FindPropertyRelative("debug"));
                 propertyHeight += EditorGUIUtility.singleLineHeight * 0.85f;
+                propertyOffset += EditorGUIUtility.singleLineHeight * 0.85f;
+                
+                // Initial trigger toggle
+                Rect initialTriggerTogglePosition = new(position.x, position.y + propertyOffset, position.width, EditorGUIUtility.singleLineHeight);
+                EditorGUI.PropertyField(initialTriggerTogglePosition, property.FindPropertyRelative("initialTrigger"));
+                propertyHeight += EditorGUIUtility.singleLineHeight * 0.85f;
             }
             // End
             EditorGUI.EndProperty();

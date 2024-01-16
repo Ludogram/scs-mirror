@@ -22,6 +22,12 @@ namespace Dhs5.SceneCreation
         }
         public SceneContext(SceneContext context)
         {
+            if (context == null)
+            {
+                sb = new("No context");
+                rank = 0;
+                return;
+            }
             string content = context.Get();
             sb = new(content);
             rank = context.rank;
