@@ -1,0 +1,234 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6873954747759285107
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89adf355e354ef943aa04305de580fe1, type: 3}
+  m_Name: SceneObject Settings
+  m_EditorClassIdentifier: 
+  _tagDatabase: {fileID: 6004459988912774}
+  _layerDatabase: {fileID: -5218766178788988799}
+  _eventColor: {r: 0, g: 0, b: 0, a: 0}
+  _debugLevel: 0
+  _level0Color: {r: 1, g: 0, b: 0, a: 1}
+  _level1Color: {r: 1, g: 0.5232177, b: 0, a: 1}
+  _level2Color: {r: 1, g: 0.7847884, b: 0, a: 1}
+  _level3Color: {r: 0.1910713, g: 0.8980392, b: 0, a: 1}
+  _level4Color: {r: 0, g: 0.5844414, b: 1, a: 1}
+  _level5Color: {r: 0.8207547, g: 0.8207547, b: 0.8207547, a: 1}
+--- !u!114 &-5218766178788988799
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9590693b46b3df840884976a375525b4, type: 3}
+  m_Name: SceneObject Layer Database(Clone)
+  m_EditorClassIdentifier: 
+  flag0: Base Layer
+  flag1: Default Layer
+  flag2: 
+  flag3: Layer 3
+  flag4: 
+  flag5: 
+  flag6: 
+  flag7: 
+  flag8: 
+  flag9: 
+  flag10: 
+  flag11: 
+  flag12: 
+  flag13: 
+  flag14: 
+  flag15: 
+  flag16: 
+  flag17: 
+  flag18: 
+  flag19: 
+  flag20: 
+  flag21: 
+  flag22: 
+  flag23: 
+  flag24: 
+  flag25: 
+  flag26: 
+  flag27: 
+  flag28: 
+  flag29: 
+  flag30: 
+  flag31: 
+  _names:
+  - '0: Base Layer'
+  - '1: Default Layer'
+  - '3: Layer 3'
+  _allNames:
+  - '0: Base Layer'
+  - '1: Default Layer'
+  - '2: --- Empty ---'
+  - '3: Layer 3'
+  _values: 000000000100000003000000
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41838b7ddc7623d4a927be6e2b73e2cf, type: 3}
+  m_Name: SceneCreationSettings
+  m_EditorClassIdentifier: 
+  intersceneVariablesSO: {fileID: 2931021990422469653}
+  sceneObjectSettings: {fileID: -6873954747759285107}
+  sceneVariablesDirectory:
+    path: Assets/Scene Creation System/SceneVars
+  _debugMode: 0
+  sceneCreationPrefabs:
+    sceneManagerPrefab: {fileID: 2626548491275406242, guid: f6106367823cb444aaeed1c8b6430e4b, type: 3}
+    sceneClockPrefab: {fileID: 1445389896236721321, guid: 680ddd9afc099204cb9d8bfeb0693663, type: 3}
+    sceneObjectPrefab: {fileID: 6447064889421450952, guid: 283f5fe5160638443a30f3657e97bee7, type: 3}
+    sceneSpawnerPrefab: {fileID: 27306850221925963, guid: ba8209f177475574c8e618244933ce3d, type: 3}
+    colliderSceneObjectPrefab: {fileID: 3206603541878113604, guid: e0dad96f1c2ec364a8ef63504d22fcaa, type: 3}
+  editorColors:
+    headerBackground: {r: 0.7490196, g: 0.96862745, b: 1, a: 1}
+    headerForeground: {r: 1, g: 0.4901961, b: 0, a: 1}
+    selectionBlue: {r: 0.7490196, g: 0.8763551, b: 1, a: 1}
+--- !u!114 &6004459988912774
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01c7dfa721484e499fb3253b909b98d, type: 3}
+  m_Name: SceneObject Tag Database(Clone)
+  m_EditorClassIdentifier: 
+  flag0: First Tag
+  flag1: Second Tag
+  flag2: 
+  flag3: Fourth Tag
+  flag4: Fifth tag
+  flag5: 
+  flag6: 
+  flag7: 
+  flag8: 
+  flag9: 
+  flag10: 
+  flag11: 
+  flag12: 
+  flag13: 
+  flag14: 
+  flag15: 
+  flag16: 
+  flag17: 
+  flag18: 
+  flag19: 
+  flag20: 
+  flag21: 
+  flag22: 
+  flag23: 
+  flag24: 
+  flag25: 
+  flag26: 
+  flag27: 
+  flag28: 
+  flag29: 
+  flag30: 
+  flag31: 
+  _names:
+  - '0: First Tag'
+  - '1: Second Tag'
+  - '3: Fourth Tag'
+  - '4: Fifth tag'
+  _allNames:
+  - '0: First Tag'
+  - '1: Second Tag'
+  - '2: --- Empty ---'
+  - '3: Fourth Tag'
+  - '4: Fifth tag'
+  _values: 00000000010000000300000004000000
+--- !u!114 &2931021990422469653
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cda7ef96f7c07d48a703ffbc9dee744, type: 3}
+  m_Name: IntersceneVars(Clone)
+  m_EditorClassIdentifier: 
+  sceneVars:
+  - uniqueID: 10811
+    ID: Global/bool 1
+    type: 0
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    hasMin: 0
+    hasMax: 0
+    minInt: 0
+    maxInt: 0
+    minFloat: 0
+    maxFloat: 0
+    isStatic: 0
+    isRandom: 0
+    isLink: 0
+    isGlobal: 1
+    propertyHeight: 0
+    showDependencies: 0
+    sceneObjects: []
+  - uniqueID: 10271
+    ID: Global/float 1
+    type: 2
+    boolValue: 0
+    intValue: 0
+    floatValue: 5.87
+    stringValue: 
+    hasMin: 0
+    hasMax: 0
+    minInt: 0
+    maxInt: 0
+    minFloat: 0
+    maxFloat: 0
+    isStatic: 0
+    isRandom: 0
+    isLink: 0
+    isGlobal: 1
+    propertyHeight: 0
+    showDependencies: 0
+    sceneObjects: []
+  - uniqueID: 10387
+    ID: Global/int 1
+    type: 1
+    boolValue: 0
+    intValue: 3
+    floatValue: 0
+    stringValue: 
+    hasMin: 0
+    hasMax: 0
+    minInt: 0
+    maxInt: 0
+    minFloat: 0
+    maxFloat: 0
+    isStatic: 0
+    isRandom: 0
+    isLink: 0
+    isGlobal: 1
+    propertyHeight: 0
+    showDependencies: 0
+    sceneObjects: []

@@ -1,0 +1,18 @@
+{
+    "name": "DirectoryPicker.Editor",
+    "rootNamespace": "Dhs5.Utility.DirectoryPicker.Editor",
+    "references": [
+        "GUID:73544f55a4879fc4389691db01e8fa62"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

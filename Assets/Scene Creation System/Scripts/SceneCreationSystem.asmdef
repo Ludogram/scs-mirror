@@ -1,0 +1,19 @@
+{
+    "name": "SceneCreationSystem",
+    "rootNamespace": "Dhs5.SceneCreation",
+    "references": [
+        "GUID:022a898c68ffb5b43b96b7a36e864b66",
+        "GUID:da1533e689c8cc04bb808c6ccb364189",
+        "GUID:17a9c4814554c77408d6c239bd1a9428",
+        "GUID:73544f55a4879fc4389691db01e8fa62"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
