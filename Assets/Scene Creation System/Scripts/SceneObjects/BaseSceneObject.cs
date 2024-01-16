@@ -271,6 +271,9 @@ namespace Dhs5.SceneCreation
         #endregion
 
         #region Registration
+
+        protected List<BaseSceneEvent>[] SceneEventsArray { get; private set; }
+
         protected Dictionary<string, List<BaseSceneEvent>> SceneEventsDico { get; private set; } = new();
         protected Dictionary<string, List<BaseSceneListener>> SceneListenersDico { get; private set; } = new();
         protected Dictionary<string, SceneVarTween> TweensDico { get; private set; } = new();
@@ -288,6 +291,26 @@ namespace Dhs5.SceneCreation
             if (vars.IsValid())
                 foreach (var v in vars)
                     RegisterEvent(v.name, v.list);
+        }
+        
+        protected void RegisterEvent<T>(int index, string name, List<T> list) where T : BaseSceneEvent
+        {
+            if (list.IsValid())
+            {
+                List<BaseSceneEvent> events = list.Cast<BaseSceneEvent>().ToList();
+                SceneEventsDico[name] = events;
+
+                if (SceneEventsArray.Length > index)
+                {
+                    SceneEventsArray[index] = events;
+                }
+            }
+        }
+        protected void RegisterEvents<T>(params (int index, string name, List<T> list)[] vars) where T : BaseSceneEvent
+        {
+            if (vars.IsValid())
+                foreach (var v in vars)
+                    RegisterEvent(v.index, v.name, v.list);
         }
         #endregion
 
