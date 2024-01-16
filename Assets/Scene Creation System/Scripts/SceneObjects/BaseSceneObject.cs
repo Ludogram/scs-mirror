@@ -380,7 +380,7 @@ namespace Dhs5.SceneCreation
             {
                 if (HasRegisteredProfileOfType<T>())
                 {
-                    SceneDebugger.Log("Can't register 2 profiles of the same type : " + profile, this);
+                    Debug.Log("Can't register 2 profiles of the same type : " + profile, this);
                     return;
                 }
 
