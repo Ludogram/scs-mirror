@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 using System.Text;
+using Mirror;
 
 namespace Dhs5.SceneCreation
 {
@@ -70,7 +71,7 @@ namespace Dhs5.SceneCreation
         public abstract bool Trigger();
         protected bool IsTriggerValid()
         {
-            if (!sceneConditions.VerifyConditions()) return false;
+            if (!NetworkServer.active || !sceneConditions.VerifyConditions()) return false;
 
             context = new SceneContext(sceneObject.name);
             context.Add("Trigger : " + eventID);

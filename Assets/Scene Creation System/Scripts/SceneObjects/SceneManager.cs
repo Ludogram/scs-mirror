@@ -48,6 +48,17 @@ namespace Dhs5.SceneCreation
         }
         #endregion
 
+        [SerializeField] private NetworkSceneVariablesContainer _networkSceneVarContainer;
+
+        public static NetworkSceneVariablesContainer NewtorkSceneVarContainer
+        {
+            get
+            {
+                if (Instance == null) return null;
+                return Instance._networkSceneVarContainer;
+            }
+        }
+
         public override string DisplayName => "Scene Manager";
 
         [Tooltip("Events called when the Scene starts,\n just before every SceneObject.OnStartScene()")]
