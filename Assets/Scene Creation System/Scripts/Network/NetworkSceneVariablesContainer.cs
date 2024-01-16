@@ -12,6 +12,8 @@ namespace Dhs5.SceneCreation
         private Dictionary<int, List<int>> SceneVarLinks = new();
         private Dictionary<int, object> FormerValues = new();
 
+        #region Scene Var Management
+
         public void Clear()
         {
             SceneVariables.Clear();
@@ -94,6 +96,8 @@ namespace Dhs5.SceneCreation
                 }
             }
         }
+
+        #endregion
 
         #region Public accessors
 
@@ -216,6 +220,8 @@ namespace Dhs5.SceneCreation
         }
         #endregion
 
+        #region Operations
+
         public bool CanModifyVar(int uniqueID, SceneVarType type, out SceneVar var)
         {
             var = null;
@@ -250,6 +256,8 @@ namespace Dhs5.SceneCreation
                 return false;
             }
         }
+
+        #endregion
 
         #region Log
         internal static void IncorrectID(int UID)
