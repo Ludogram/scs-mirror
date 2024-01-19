@@ -7,14 +7,7 @@ namespace Dhs5.SceneCreation
     public static class SceneDebugger
     {
         private static SceneObjectSettings _settings;
-        private static SceneObjectSettings Settings
-        {
-            get
-            {
-                if (_settings == null) _settings = SceneManager.Settings;
-                return _settings;
-            }
-        }
+        private static SceneObjectSettings Settings => _settings;
 
 
         #region Color
@@ -69,11 +62,15 @@ namespace Dhs5.SceneCreation
 
         public static void Log(string _message, BaseSceneObject _object, int level = 0)
         {
+            if (Settings == null) _settings = _object.SceneVariablesSO.Settings;
+
             if (Settings.DebugLevel >= level)
                 Debug.Log($"<color=#{LevelToColorString(level)}>{_message}</color>", _object);
         }
         public static void Log(object _message, BaseSceneObject _object, int level = 0)
         {
+            if (Settings == null) _settings = _object.SceneVariablesSO.Settings;
+
             if (Settings.DebugLevel >= level)
                 Debug.Log($"<color=#{LevelToColorString(level)}>{_message}</color>", _object);
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Dhs5.SceneCreation
 {
@@ -63,19 +62,11 @@ namespace Dhs5.SceneCreation
 
     public static class SceneState
     {
-        private static Dictionary<uint, BaseSceneObject> sceneObjects = new();
-
-        //private static event Action onStartScene;
-        //private static event Action onChangeScene;
-        //private static event Action onCompleteScene;
-        //private static event Action onGameOver;
-        //
-        //private static event Action<int> onSceneUpdate;
+        private static Dictionary<int, BaseSceneObject> sceneObjects = new();
 
         private static List<IOnStartScene> onStartSceneObjects = new();
         private static List<IOnChangeScene> onChangeSceneObjects = new();
         private static List<IOnCompleteScene> onCompleteSceneObjects = new();
-        private static List<IOnUpdateScene> onUpdateSceneObjects = new();
         private static List<IOnGameOver> onGameOverObjects = new();
 
         //private static Dictionary<int, SceneVar> SceneVariables = new();
@@ -84,21 +75,24 @@ namespace Dhs5.SceneCreation
         //private static Dictionary<int, object> FormerValues = new();
 
         #region Scene Object Registration
-        public static bool TryGetSceneObject(uint id, out BaseSceneObject sceneObject)
+        public static bool TryGetSceneObject(int id, out BaseSceneObject sceneObject)
         {
             return sceneObjects.TryGetValue(id, out sceneObject);
         }
 
         public static void Register(BaseSceneObject sceneObject)
         {
-            if (sceneObjects.ContainsKey(sceneObject.netId)) return;
+            if (sceneObjects.ContainsKey(sceneObject.SOID))
+            {
+                Debug.LogError(sceneObject.SOID + " is already used as a SceneObjectID, either " + sceneObject + " is already registered or 2 SceneObjects have the same ID (Thomas screwed up)");
+                return;
+            }
 
-            sceneObjects.Add(sceneObject.netId, sceneObject);
+            sceneObjects.Add(sceneObject.SOID, sceneObject);
 
             if (sceneObject is IOnStartScene onStartSO) onStartSceneObjects.Add(onStartSO);
             if (sceneObject is IOnChangeScene onChangeSO) onChangeSceneObjects.Add(onChangeSO);
             if (sceneObject is IOnCompleteScene onCompleteSO) onCompleteSceneObjects.Add(onCompleteSO);
-            if (sceneObject is IOnUpdateScene onUpdateSO) onUpdateSceneObjects.Add(onUpdateSO);
             if (sceneObject is IOnGameOver onGameOverSO) onGameOverObjects.Add(onGameOverSO);
 
             //if (sceneObject.DoStartScene)
@@ -115,14 +109,13 @@ namespace Dhs5.SceneCreation
         }
         public static void Unregister(BaseSceneObject sceneObject)
         {
-            if (!sceneObjects.ContainsKey(sceneObject.netId)) return;
+            if (!sceneObjects.ContainsKey(sceneObject.SOID)) return;
 
-            sceneObjects.Remove(sceneObject.netId);
+            sceneObjects.Remove(sceneObject.SOID);
 
             if (sceneObject is IOnStartScene onStartSO) onStartSceneObjects.Remove(onStartSO);
             if (sceneObject is IOnChangeScene onChangeSO) onChangeSceneObjects.Remove(onChangeSO);
             if (sceneObject is IOnCompleteScene onCompleteSO) onCompleteSceneObjects.Remove(onCompleteSO);
-            if (sceneObject is IOnUpdateScene onUpdateSO) onUpdateSceneObjects.Remove(onUpdateSO);
             if (sceneObject is IOnGameOver onGameOverSO) onGameOverObjects.Remove(onGameOverSO);
 
             //if (sceneObject.DoStartScene)
@@ -166,37 +159,34 @@ namespace Dhs5.SceneCreation
             //onGameOver?.Invoke();
         }
 
-        public static void UpdateScene(int frameIndex)
+        public static void DebugRegisteredSceneObjects()
         {
-            foreach (var o in onUpdateSceneObjects)
-                o.OnUpdateScene(frameIndex);
-
-            //onSceneUpdate?.Invoke(frameIndex);
+            foreach (var so in sceneObjects)
+            {
+                Debug.Log(so + " is registered in the SceneState");
+            }
+        }
+        public static void DebugSceneVariables()
+        {
+            NetworkSceneVariablesContainer.Instance.DebugSceneVariables();
         }
         #endregion
 
         #region Private Utility functions
-        private static void Clear()
-        {
-            SceneManager.NewtorkSceneVarContainer.Clear();
-            //SceneVariables.Clear();
-            //ComplexSceneVariables.Clear();
-            //SceneVarLinks.Clear();
-        }
         private static void AddVar(SceneVar variable)
         {
-            SceneManager.NewtorkSceneVarContainer.AddVar(variable);
+            NetworkSceneVariablesContainer.Instance.AddVar(variable);
             //SceneVariables[variable.uniqueID] = new(variable);
         }
         private static void AddComplexVar(ComplexSceneVar variable)
         {
-            SceneManager.NewtorkSceneVarContainer.AddComplexVar(variable);
+            NetworkSceneVariablesContainer.Instance.AddComplexVar(variable);
             //ComplexSceneVariables[variable.uniqueID] = new(variable);
         }
 
         private static void SaveFormerValues()
         {
-            SceneManager.NewtorkSceneVarContainer.SaveFormerValues();
+            NetworkSceneVariablesContainer.Instance.SaveFormerValues();
             //if (SceneVariables == null) return;
             //
             //FormerValues.Clear();
@@ -208,7 +198,7 @@ namespace Dhs5.SceneCreation
 
         private static void ChangedVar(int varUniqueID, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.ChangedVar(varUniqueID, sender, context);
+            NetworkSceneVariablesContainer.Instance.ChangedVar(varUniqueID, sender, context);
             //if (SceneVariables.ContainsKey(varUniqueID))
             //{
             //    SceneEventManager.TriggerEvent(varUniqueID, new(SceneVariables[varUniqueID], FormerValues[varUniqueID], sender, context));
@@ -217,7 +207,7 @@ namespace Dhs5.SceneCreation
         }
         internal static void CheckChangedLink(int varUniqueID, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.CheckChangedLink(varUniqueID, sender, context);
+            NetworkSceneVariablesContainer.Instance.CheckChangedLink(varUniqueID, sender, context);
             //if (SceneVarLinks.ContainsKey(varUniqueID))
             //{
             //    foreach (var complexUID in SceneVarLinks[varUniqueID])
@@ -239,13 +229,13 @@ namespace Dhs5.SceneCreation
 
         internal static Dictionary<int, SceneVar> GetCurrentSceneVars()
         {
-            return SceneManager.NewtorkSceneVarContainer.GetCurrentSceneVars();
+            return NetworkSceneVariablesContainer.Instance.GetCurrentSceneVars();
             //return new(SceneVariables);
         }
 
         internal static object GetObjectValue(int varUniqueID)
         {
-            return SceneManager.NewtorkSceneVarContainer.GetObjectValue(varUniqueID);
+            return NetworkSceneVariablesContainer.Instance.GetObjectValue(varUniqueID);
             //if (SceneVariables.ContainsKey(varUniqueID))
             //    return SceneVariables[varUniqueID].Value;
             //
@@ -255,7 +245,7 @@ namespace Dhs5.SceneCreation
 
         internal static SceneVar GetSceneVar(int uniqueID)
         {
-            return SceneManager.NewtorkSceneVarContainer.GetSceneVar(uniqueID);
+            return NetworkSceneVariablesContainer.Instance.GetSceneVar(uniqueID);
             //if (IntersceneState.IsGlobalVar(uniqueID))
             //{
             //    return IntersceneState.GetSceneVar(uniqueID);
@@ -273,7 +263,7 @@ namespace Dhs5.SceneCreation
         }
         internal static ComplexSceneVar GetComplexSceneVar(int uniqueID)
         {
-            return SceneManager.NewtorkSceneVarContainer.GetComplexSceneVar(uniqueID);
+            return NetworkSceneVariablesContainer.Instance.GetComplexSceneVar(uniqueID);
             //if (ComplexSceneVariables.ContainsKey(uniqueID))
             //{
             //    return ComplexSceneVariables[uniqueID];
@@ -283,7 +273,7 @@ namespace Dhs5.SceneCreation
         }
         internal static object GetComplexSceneVarValue(int uniqueID)
         {
-            return SceneManager.NewtorkSceneVarContainer.GetComplexSceneVarValue(uniqueID);
+            return NetworkSceneVariablesContainer.Instance.GetComplexSceneVarValue(uniqueID);
             //if (ComplexSceneVariables.ContainsKey(uniqueID))
             //{
             //    return ComplexSceneVariables[uniqueID].Value;
@@ -293,7 +283,7 @@ namespace Dhs5.SceneCreation
         }
         public static bool TryGetBoolValue(int varUniqueID, out bool value)
         {
-            return SceneManager.NewtorkSceneVarContainer.TryGetBoolValue(varUniqueID, out value);
+            return NetworkSceneVariablesContainer.Instance.TryGetBoolValue(varUniqueID, out value);
             //value = false;
             //if (SceneVariables.ContainsKey(varUniqueID))
             //{
@@ -311,7 +301,7 @@ namespace Dhs5.SceneCreation
         }
         public static bool TryGetIntValue(int varUniqueID, out int value)
         {
-            return SceneManager.NewtorkSceneVarContainer.TryGetIntValue(varUniqueID, out value);
+            return NetworkSceneVariablesContainer.Instance.TryGetIntValue(varUniqueID, out value);
             //value = 0;
             //if (SceneVariables.ContainsKey(varUniqueID))
             //{
@@ -329,7 +319,7 @@ namespace Dhs5.SceneCreation
         }
         public static bool TryGetFloatValue(int varUniqueID, out float value)
         {
-            return SceneManager.NewtorkSceneVarContainer.TryGetFloatValue(varUniqueID, out value);
+            return NetworkSceneVariablesContainer.Instance.TryGetFloatValue(varUniqueID, out value);
             //value = 0f;
             //if (SceneVariables.ContainsKey(varUniqueID))
             //{
@@ -347,7 +337,7 @@ namespace Dhs5.SceneCreation
         }
         public static bool TryGetStringValue(int varUniqueID, out string value)
         {
-            return SceneManager.NewtorkSceneVarContainer.TryGetStringValue(varUniqueID, out value);
+            return NetworkSceneVariablesContainer.Instance.TryGetStringValue(varUniqueID, out value);
             //value = null;
             //if (SceneVariables.ContainsKey(varUniqueID))
             //{
@@ -368,7 +358,6 @@ namespace Dhs5.SceneCreation
         #region Public setters
         internal static void SetSceneVars(SceneVariablesSO sceneVariablesSO, int balancingIndex = 0)
         {
-            Clear();
             if (sceneVariablesSO == null) return;
 
             List<SceneVar> sceneVars = sceneVariablesSO.BalancedSceneVars(balancingIndex);
@@ -376,7 +365,6 @@ namespace Dhs5.SceneCreation
             SetSceneVars(sceneVars);
             SetComplexSceneVars(complexSceneVars);
             SetSceneLinks();
-            IntersceneState.SetGlobalVars(sceneVariablesSO.IntersceneVariables);
         }
         private static void SetSceneVars(List<SceneVar> sceneVars)
         {
@@ -392,175 +380,42 @@ namespace Dhs5.SceneCreation
         }
         private static void SetSceneLinks()
         {
-            SceneManager.NewtorkSceneVarContainer.SetSceneLinks();
-            // Browse on Complex Scene Vars
-            //foreach (var pair in ComplexSceneVariables)
-            //{
-            //    // Get all dependencies of the Complex Scene Var
-            //    foreach (var depUID in pair.Value.Dependencies)
-            //    {
-            //        // Add a link from the dependency (SceneVar UID) to the dependant (Complex Scene Var)
-            //        if (!SceneVarLinks.ContainsKey(depUID))
-            //        {
-            //            SceneVarLinks[depUID] = new();
-            //        }
-            //        SceneVarLinks[depUID].Add(pair.Key);
-            //    }
-            //}
+            NetworkSceneVariablesContainer.Instance.SetSceneLinks();
         }
 
         internal static void ActuBalancing(SceneVariablesSO sceneVariablesSO, int balancingIndex)
         {
-            SceneManager.NewtorkSceneVarContainer.ActuBalancing(sceneVariablesSO, balancingIndex);
-            //foreach (var var in sceneVariablesSO.BalancedSceneVars(balancingIndex))
-            //{
-            //    if (var.IsStatic || var.IsRandom)
-            //    {
-            //        SceneVariables[var.uniqueID] = var;
-            //    }
-            //}
+            NetworkSceneVariablesContainer.Instance.ActuBalancing(sceneVariablesSO, balancingIndex);
         }
 
         internal static void SetVarValue(int varUniqueID, object value, BaseSceneObject sender)
         {
-            // INterscenestate
-
-            Debug.Log("set var " + varUniqueID + " to " + value + " by " + sender);
+            //Debug.Log("set var " + varUniqueID + " to " + value + " by " + sender);
 
             SaveFormerValues();
-            SceneManager.NewtorkSceneVarContainer.SetSceneVar(varUniqueID, value);
-            ChangedVar(varUniqueID, sender, null);
-        }
-        internal static void SetBoolVar(int varUniqueID, bool value, BaseSceneObject sender)
-        {
-            // INterscenestate
-
-            Debug.Log("set bool " + varUniqueID + " to " + value + " by " + sender);
-
-            SaveFormerValues();
-            SceneVar sVar = GetSceneVar(varUniqueID);
-            sVar.BoolValue = value;
-            ChangedVar(varUniqueID, sender, null);
-        }
-        internal static void SetIntVar(int varUniqueID, int value, BaseSceneObject sender)
-        {
-            // INterscenestate
-
-            Debug.Log("set int " + varUniqueID + " to " + value + " by " + sender);
-
-            SaveFormerValues();
-            SceneVar sVar = GetSceneVar(varUniqueID);
-            sVar.IntValue = value;
-            ChangedVar(varUniqueID, sender, null);
-        }
-        internal static void SetFloatVar(int varUniqueID, float value, BaseSceneObject sender)
-        {
-            // INterscenestate
-
-            Debug.Log("set float " + varUniqueID + " to " + value + " by " + sender);
-
-            SaveFormerValues();
-            SceneVar sVar = GetSceneVar(varUniqueID);
-            sVar.FloatValue = value;
-            ChangedVar(varUniqueID, sender, null);
-        }
-        internal static void SetStringVar(int varUniqueID, string value, BaseSceneObject sender)
-        {
-            // INterscenestate
-
-            Debug.Log("set string " + varUniqueID + " to " + value + " by " + sender);
-
-            SaveFormerValues();
-            SceneVar sVar = GetSceneVar(varUniqueID);
-            sVar.StringValue = value;
+            NetworkSceneVariablesContainer.Instance.SetSceneVar(varUniqueID, value);
             ChangedVar(varUniqueID, sender, null);
         }
 
         internal static void ModifyBoolVar(int varUniqueID, BoolOperation op, bool param, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.ModifyBoolVar(varUniqueID, op, param, sender, context);
-            //if (IntersceneState.IsGlobalVar(varUniqueID))
-            //{
-            //    IntersceneState.ModifyBoolVar(varUniqueID, op, param, sender, context);
-            //    return;
-            //}
-            //
-            //if (CanModifyVar(varUniqueID, SceneVarType.BOOL, out SceneVar var))
-            //{
-            //    SaveFormerValues();
-            //    if (CalculateBool(ref var, op, param))
-            //        ChangedVar(varUniqueID, sender, context);
-            //    return;
-            //}
+            NetworkSceneVariablesContainer.Instance.ModifyBoolVar(varUniqueID, op, param, sender, context);
         }
         internal static void ModifyIntVar(int varUniqueID, IntOperation op, int param, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.ModifyIntVar(varUniqueID, op, param, sender, context);
-            //if (IntersceneState.IsGlobalVar(varUniqueID))
-            //{
-            //    IntersceneState.ModifyIntVar(varUniqueID, op, param, sender, context);
-            //    return;
-            //}
-            //
-            //if (CanModifyVar(varUniqueID, SceneVarType.INT, out SceneVar var))
-            //{
-            //    Debug.Log("modify int " + varUniqueID);
-            //    SaveFormerValues();
-            //    if (CalculateInt(ref var, op, param))
-            //        ChangedVar(varUniqueID, sender, context);
-            //    Debug.Log("int " + varUniqueID + " modified");
-            //    return;
-            //}
+            NetworkSceneVariablesContainer.Instance.ModifyIntVar(varUniqueID, op, param, sender, context);
         }
         internal static void ModifyFloatVar(int varUniqueID, FloatOperation op, float param, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.ModifyFloatVar(varUniqueID, op, param, sender, context);
-            //if (IntersceneState.IsGlobalVar(varUniqueID))
-            //{
-            //    IntersceneState.ModifyFloatVar(varUniqueID, op, param, sender, context);
-            //    return;
-            //}
-            //
-            //if (CanModifyVar(varUniqueID, SceneVarType.FLOAT, out SceneVar var))
-            //{
-            //    SaveFormerValues();
-            //    if (CalculateFloat(ref var, op, param))
-            //        ChangedVar(varUniqueID, sender, context);
-            //    return;
-            //}
+            NetworkSceneVariablesContainer.Instance.ModifyFloatVar(varUniqueID, op, param, sender, context);
         }
         internal static void ModifyStringVar(int varUniqueID, StringOperation op, string param, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.ModifyStringVar(varUniqueID, op, param, sender, context);
-            //if (IntersceneState.IsGlobalVar(varUniqueID))
-            //{
-            //    IntersceneState.ModifyStringVar(varUniqueID, op, param, sender, context);
-            //    return;
-            //}
-            //
-            //if (CanModifyVar(varUniqueID, SceneVarType.STRING, out SceneVar var))
-            //{
-            //    SaveFormerValues();
-            //    if (CalculateString(ref var, op, param))
-            //        ChangedVar(varUniqueID, sender, context);
-            //    return;
-            //}
+            NetworkSceneVariablesContainer.Instance.ModifyStringVar(varUniqueID, op, param, sender, context);
         }
         internal static void TriggerEventVar(int varUniqueID, BaseSceneObject sender, SceneContext context)
         {
-            SceneManager.NewtorkSceneVarContainer.TriggerEventVar(varUniqueID, sender, context);
-            //if (IntersceneState.IsGlobalVar(varUniqueID))
-            //{
-            //    IntersceneState.TriggerEventVar(varUniqueID, sender, context);
-            //    return;
-            //}
-            //
-            //if (CanModifyVar(varUniqueID, SceneVarType.EVENT, out SceneVar var))
-            //{
-            //    SaveFormerValues();
-            //    ChangedVar(varUniqueID, sender, context);
-            //    return;
-            //}
+            NetworkSceneVariablesContainer.Instance.TriggerEventVar(varUniqueID, sender, context);
         }
         #endregion
 
@@ -568,7 +423,7 @@ namespace Dhs5.SceneCreation
 
         private static bool CanModifyVar(int uniqueID, SceneVarType type, out SceneVar var)
         {
-            return SceneManager.NewtorkSceneVarContainer.CanModifyVar(uniqueID, type, out var);
+            return NetworkSceneVariablesContainer.Instance.CanModifyVar(uniqueID, type, out var);
             //var = null;
             //
             //// Check if the UID is valid

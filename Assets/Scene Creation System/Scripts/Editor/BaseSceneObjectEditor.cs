@@ -132,6 +132,7 @@ namespace Dhs5.SceneCreation
 
             if (!isManager && baseSceneObject.SceneVariablesSO == null)
             {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("sceneManager"), empty);
                 EditorGUILayout.HelpBox("You need to setup the SceneManager and its SceneVariablesSO", MessageType.Error);
                 return 0;
             }
@@ -141,11 +142,11 @@ namespace Dhs5.SceneCreation
                 lineRect.x -= 18f;
                 lineRect.width += 25f;
                 EditorGUI.DrawRect(lineRect, foregroundColor);
-                lineRect.y += 76f;
+                lineRect.y += isManager ? 76f : 98f;
                 EditorGUI.DrawRect(lineRect, foregroundColor);
 
                 Rect backgroundRect = EditorGUILayout.GetControlRect(false, 1f);
-                backgroundRect.height = 72f;
+                backgroundRect.height = isManager ? 72f : 94f;
                 backgroundRect.width += 25f;
                 backgroundRect.x -= 18f;
                 backgroundRect.y -= 1f;
@@ -165,14 +166,31 @@ namespace Dhs5.SceneCreation
                 {
                     EditorHelper.GetSceneCreationSettings();
                 }
+                GUI.contentColor = foregroundColor;
 
-                if (!isManager) GUI.contentColor = foregroundColor;
+                EditorGUI.LabelField(new Rect
+                    (currentRect.x + (currentRect.width - 98f), currentRect.y, 42f, currentRect.height),
+                    new GUIContent(serializedObject.FindProperty("sceneObjectID").intValue.ToString(), "Scene Object ID"), headerStyle);
+
+                if (isManager) GUI.contentColor = Color.white;
 
                 EditorGUI.BeginDisabledGroup(!isManager);
                 EditorGUI.PropertyField(new Rect
-                    (currentRect.x, currentRect.y, currentRect.width - 58f, currentRect.height),
+                    (currentRect.x, currentRect.y, currentRect.width - 100f, currentRect.height),
                     serializedObject.FindProperty("sceneVariablesSO"), empty);
                 EditorGUI.EndDisabledGroup();
+
+                if (!isManager)
+                {
+                    GUI.contentColor = Color.white;
+
+                    currentRect = EditorGUILayout.GetControlRect(false, 20f);
+                    EditorGUI.PropertyField(new Rect
+                    (currentRect.x, currentRect.y, currentRect.width, currentRect.height),
+                    serializedObject.FindProperty("sceneManager"), empty);
+
+                    GUI.contentColor = foregroundColor;
+                }
 
                 EditorGUILayout.Space(1f);
 

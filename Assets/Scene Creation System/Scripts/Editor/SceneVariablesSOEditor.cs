@@ -15,7 +15,7 @@ namespace Dhs5.SceneCreation
         SceneVariablesSO sceneVariablesSO;
 
         //bool detailFoldoutOpen;
-        string[] pageNames = new string[] { "Scene Vars", "Complex Vars", "Global Vars", "Balancing" };
+        string[] pageNames = new string[] { "Scene Vars", "Complex Vars" }; //, "Global Vars", "Balancing" };
 
         private void OnEnable()
         {
@@ -43,7 +43,7 @@ namespace Dhs5.SceneCreation
             //if (detailFoldoutOpen)
             {
                 EditorGUI.BeginDisabledGroup(true);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("intersceneVariablesSO"));
+                //EditorGUILayout.PropertyField(serializedObject.FindProperty("intersceneVariablesSO"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("sceneObjectSettings"));
                 EditorGUI.EndDisabledGroup();
             }
@@ -51,6 +51,24 @@ namespace Dhs5.SceneCreation
             EditorGUILayout.Space(3f);
 
             EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(10f);
+
+            SerializedProperty uidRangeProperty = serializedObject.FindProperty("uidRange");
+            Vector2Int range = EditorGUILayout.Vector2IntField(new GUIContent("UID Range","Min inclusive, Max exclusive"), uidRangeProperty.vector2IntValue);
+            int x = Mathf.Max(1, range.x);
+            range = new Vector2Int(x, Mathf.Max(x + 999, range.y));
+            uidRangeProperty.vector2IntValue = range;
+            if (GUILayout.Button("Fix UIDs not in range"))
+            {
+                if (EditorUtility.DisplayDialog("Fix UIDs that are not in the range " + range + " ?",
+                    "If you do this, all SceneElement dependencies to these SceneVars will be broken.\nThis process may not be reversible. Do it only as a last resort.",
+                    "I'm sure", "Hmmm let's ask Thomas first"))
+                {
+                    Debug.Log("FIX UIDs");
+                    sceneVariablesSO.FixUIDsNotInRange();
+                }
+            }
 
             EditorGUILayout.Space(15f);
 

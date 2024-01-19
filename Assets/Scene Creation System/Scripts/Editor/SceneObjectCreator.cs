@@ -20,6 +20,16 @@ namespace Dhs5.SceneCreation
             Selection.activeGameObject = obj;
             return sceneObject;
         }
+        protected static T CreateObject<T>(GameObject prefab, MenuCommand menuCommand)
+        {
+            GameObject obj = PrefabUtility.InstantiatePrefab(prefab, Selection.activeTransform) as GameObject;
+            T newObject = obj.GetComponent<T>();
+            GameObjectUtility.SetParentAndAlign(obj, menuCommand?.context as GameObject);
+            PrefabUtility.UnpackPrefabInstance(obj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Undo.RegisterCreatedObjectUndo(obj, "Create " + obj.name);
+            Selection.activeGameObject = obj;
+            return newObject;
+        }
 
         [MenuItem(menuPath + "SceneObject", priority = 10, secondaryPriority = 3)]
         public static SceneObject CreateSimpleSceneObject(MenuCommand menuCommand)
@@ -49,6 +59,12 @@ namespace Dhs5.SceneCreation
         public static SceneSpawner CreateSceneSpawner(MenuCommand menuCommand)
         {
             return CreateSceneObject(SceneCreationSettings.instance.Prefabs.sceneSpawnerPrefab, menuCommand) as SceneSpawner;
+        }
+        
+        [MenuItem(menuPath + "NetworkSceneVarContainer", priority = 10, secondaryPriority = 5)]
+        public static NetworkSceneVariablesContainer CreateNetworkSceneVarContainer(MenuCommand menuCommand)
+        {
+            return CreateObject<NetworkSceneVariablesContainer>(SceneCreationSettings.instance.Prefabs.networkSceneVarContainerPrefab, menuCommand);
         }
     }
 }

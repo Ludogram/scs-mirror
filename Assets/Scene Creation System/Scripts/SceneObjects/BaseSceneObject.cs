@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine.Scripting;
 using System.Text;
 using Mirror;
+using UnityEditor;
 
 namespace Dhs5.SceneCreation
 {
@@ -20,20 +21,21 @@ namespace Dhs5.SceneCreation
     {
         public void OnCompleteScene();
     }
-    public interface IOnUpdateScene
-    {
-        public void OnUpdateScene(int frameIndex);
-    }
     public interface IOnGameOver
     {
         public void OnGameOver();
     }
 
-    [RequireComponent(typeof(NetworkIdentity))]
-    public abstract class BaseSceneObject : NetworkBehaviour, SceneState.ISceneLogableWithChild, SceneState.ISceneVarDependantWithChild
+    public abstract class BaseSceneObject : MonoBehaviour, SceneState.ISceneLogableWithChild, SceneState.ISceneVarDependantWithChild
     {
         [SerializeField, HideInInspector] protected SceneVariablesSO sceneVariablesSO;
         public SceneVariablesSO SceneVariablesSO => sceneVariablesSO;
+
+        [SerializeField, HideInInspector] protected SceneManager sceneManager;
+        public SceneManager SceneManager => sceneManager;
+
+        [SerializeField, HideInInspector] protected int sceneObjectID;
+        public int SOID => sceneObjectID;
 
         [SerializeField, HideInInspector] protected SceneObjectTag sceneObjectTag;
         public SceneObjectTag Tag => sceneObjectTag;
@@ -48,11 +50,6 @@ namespace Dhs5.SceneCreation
         #region Private Editor References
 
 #if UNITY_EDITOR
-        /// <summary>
-        /// Editor only reference to the <see cref="SceneManager"/> of the Scene
-        /// </summary>
-        [SerializeField, HideInInspector] private SceneManager sceneManager;
-
         [SerializeField, HideInInspector] private int currentPage;
 #endif
 
@@ -69,15 +66,11 @@ namespace Dhs5.SceneCreation
             OnSceneObjectAwake();
         }
         // TODO : Create UID for SceneObjects to replace netID
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-
-            SceneState.Register(this);
-        }
 
         private void OnEnable()
         {
+            SceneState.Register(this);
+
             StartSubscription();
             EnableScriptables();
 
@@ -93,10 +86,9 @@ namespace Dhs5.SceneCreation
             OnSceneObjectDisable();
         }
 
-        protected override void OnValidate()
+#if UNITY_EDITOR
+        private void OnValidate()
         {
-            base.OnValidate();
-
             if (GetSceneVariablesSO())
             {
                 UpdateSceneVariables();
@@ -104,34 +96,11 @@ namespace Dhs5.SceneCreation
 
             OnSceneObjectValidate();
         }
+#endif
+
         #endregion
 
         #region Automatisation
-        /// <summary>
-        /// Private function getting the <see cref="SceneManager"/> of the Scene and the <see cref="SceneVariablesSO"/>
-        /// </summary>
-        /// <returns>True if <see cref="SceneVariablesSO"/> is valid</returns>
-        private bool GetSceneVariablesSO()
-        {
-            if (this is SceneManager) return sceneVariablesSO != null;
-
-            if (sceneManager == null)
-            {
-                sceneManager = FindObjectOfType<SceneManager>();
-            }
-
-            if (sceneManager != null)
-            {
-                sceneVariablesSO = sceneManager.SceneVariablesSO;
-                return sceneVariablesSO != null;
-            }
-            else
-            {
-                sceneVariablesSO = null;
-            }
-
-            return false;
-        }
         /// <summary>
         /// Called on <see cref="Awake"/>.<br></br><br></br>
         /// If overriden :<br></br>
@@ -201,6 +170,53 @@ namespace Dhs5.SceneCreation
         }
 
         #region Editor
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Private function getting the <see cref="SceneManager"/> of the Scene and the <see cref="SceneVariablesSO"/>
+        /// </summary>
+        /// <returns>True if <see cref="SceneVariablesSO"/> is valid</returns>
+        private bool GetSceneVariablesSO()
+        {
+            if (PrefabUtility.IsPartOfPrefabAsset(gameObject))
+            {
+                return false;
+            }
+
+            if (this is SceneManager sm)
+            {
+                sceneManager = sm;
+                return sceneVariablesSO != null;
+            }
+
+            if (sceneManager == null)
+            {
+                Debug.LogError(name + " doesn't have a SceneManager");
+                sceneVariablesSO = null;
+                return false;
+            }
+
+            sceneVariablesSO = sceneManager.SceneVariablesSO;
+            return sceneVariablesSO != null;
+        }
+
+        [ContextMenu("Get Scene Manager")]
+        private void TryGetSceneManager()
+        {
+            if (EditorUtility.DisplayDialog("Get the SceneManager of this scene ?",
+                "Make sure that only one SceneManager exist in all the currently loaded scenes before doing it or it could break dependencies.", 
+                "Let's do it", "Cancel"))
+            {
+                GetSceneManager();
+            }
+        }
+
+        internal void GetSceneManager()
+        {
+            sceneManager = FindObjectOfType<SceneManager>();
+            Refresh();
+        }
+
         /// <summary>
         /// Editor only function called when the Editor of this object is enabled
         /// </summary>
@@ -215,8 +231,51 @@ namespace Dhs5.SceneCreation
             if (GetSceneVariablesSO())
             {
                 UpdateSceneVariables();
+                CheckSOID();
             }
         }
+        internal void Refresh(BaseSceneObject[] sceneObjects)
+        {
+            if (GetSceneVariablesSO())
+            {
+                UpdateSceneVariables();
+                CheckSOID(sceneObjects); 
+            }
+        }
+
+        private void CheckSOID()
+        {
+            CheckSOID(FindObjectsOfType<BaseSceneObject>(true));
+        }
+        private void CheckSOID(BaseSceneObject[] sceneObjects)
+        {
+            List<int> IDs = new();
+            Vector2Int IDRange = sceneManager.IDRange;
+            if (IDRange.x >= IDRange.y)
+            {
+                sceneManager.FixIDRange();
+            }
+            IDRange = sceneManager.IDRange;
+
+            foreach (var so in sceneObjects)
+            {
+                if (so != this)
+                {
+                    IDs.Add(so.SOID);
+                }
+            }
+
+            if (IDs.Contains(SOID) || SOID >= IDRange.y || SOID < IDRange.x)
+            {
+                Debug.Log(name + " SOID " + SOID + " already exists or is not in the range " + IDRange + ", let's change it");
+
+                do
+                {
+                    sceneObjectID = Random.Range(IDRange.x, IDRange.y);
+                } while (IDs.Contains(SOID));
+            }
+        }
+#endif
 
         #endregion
 
@@ -1066,7 +1125,12 @@ namespace Dhs5.SceneCreation
 
         #region Debug
 
-        
+#if UNITY_EDITOR
+        public void DebugEventParam(SceneEventParam param)
+        {
+            Debug.Log(param);
+        }
+#endif
 
         #endregion
 

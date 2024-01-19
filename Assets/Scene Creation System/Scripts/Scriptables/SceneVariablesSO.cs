@@ -30,10 +30,10 @@ namespace Dhs5.SceneCreation
 
         private List<SceneVar> GetSceneVars()
         {
-            if (intersceneVariablesSO != null && intersceneVariablesSO.SceneVars.IsValid())
-            {
-                return sceneVars.IsValid() ? sceneVars.Concat(intersceneVariablesSO.SceneVars).ToList() : intersceneVariablesSO.SceneVars;
-            }
+            //if (intersceneVariablesSO != null && intersceneVariablesSO.SceneVars.IsValid())
+            //{
+            //    return sceneVars.IsValid() ? sceneVars.Concat(intersceneVariablesSO.SceneVars).ToList() : intersceneVariablesSO.SceneVars;
+            //}
             return sceneVars;
         }
 
@@ -51,7 +51,11 @@ namespace Dhs5.SceneCreation
         {
             get
             {
-                if (uniqueID > 10000) return IntersceneVariables[uniqueID];
+                if (uniqueID >= UIDRange.y || uniqueID < UIDRange.x)
+                {
+                    Debug.LogError("UID " + uniqueID + " is not in the range " + UIDRange);
+                    return null;
+                }
 
                 SceneVar sVar = SceneVars.Find(v => v.uniqueID == uniqueID);
                 if (sVar == null) Debug.LogError("Can't find SceneVar from UID " + uniqueID + " in " + name);
@@ -261,7 +265,7 @@ namespace Dhs5.SceneCreation
         */
         #endregion
 
-        private Vector2Int uidRange = new Vector2Int(1, 10000);
+        [SerializeField] private Vector2Int uidRange = new Vector2Int(1, 10000);
         protected override Vector2Int UIDRange => uidRange;
 
         
@@ -281,6 +285,38 @@ namespace Dhs5.SceneCreation
         internal void OnEditorEnable()
         {
             GetSceneCreationSettings();
+        }
+
+        internal void FixUIDsNotInRange()
+        {
+            if (!Application.isPlaying)
+            {
+                int uid;
+                SceneVar sVar;
+                ComplexSceneVar cVar;
+
+                for (int i = 0; i < complexSceneVars.Count; i++)
+                {
+                    cVar = complexSceneVars[i];
+                    uid = cVar.uniqueID;
+                    if (uid >= UIDRange.y || uid < UIDRange.x)
+                    {
+                        cVar.uniqueID = GenerateUniqueID();
+                        sVar = sceneVars.Find(x => x.uniqueID == uid);
+                        if (sVar != null) sVar.uniqueID = cVar.uniqueID;
+                    }
+                }
+
+                for (int i = 0; i < sceneVars.Count; i++)
+                {
+                    sVar = sceneVars[i];
+                    uid = sVar.uniqueID;
+                    if (!sVar.IsLink && (uid >= UIDRange.y || uid < UIDRange.x))
+                    {
+                        sVar.uniqueID = GenerateUniqueID();
+                    }
+                }
+            }
         }
 #endif
 

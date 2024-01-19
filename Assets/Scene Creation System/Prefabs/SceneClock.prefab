@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5811698339757312643}
   - component: {fileID: 5199212714266728506}
-  - component: {fileID: 1273089694094109768}
   m_Layer: 0
   m_Name: SceneClock
   m_TagString: Untagged
@@ -45,36 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ff0bf4ffb9c65f46a646d81278e8c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneVariablesSO: {fileID: 0}
+  sceneManager: {fileID: 0}
+  sceneObjectID: 0
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 0}
   currentPage: 0
   sceneTimelines:
     list: []
     currentTimeline: 0
     currentStep: 0
     propertyHeight: 22.5
---- !u!114 &1273089694094109768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1445389896236721321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clientStarted: 0
-  sceneId: 0
-  _assetId: 1739904488
-  serverOnly: 0
-  visible: 0
-  hasSpawned: 0

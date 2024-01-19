@@ -29,7 +29,7 @@ namespace Dhs5.SceneCreation
             internal Operation operation;
             internal int key;
             internal SceneVar item;
-            internal uint sceneObjectID;
+            internal int sceneObjectID;
         }
 
         // list of changes.
@@ -84,7 +84,7 @@ namespace Dhs5.SceneCreation
                 operation = op,
                 key = key,
                 item = item,
-                sceneObjectID = sender != null ? sender.netId : 0
+                sceneObjectID = sender != null ? sender.SOID : 0
             };
 
             if (IsRecording() && !LocalOnly)
@@ -241,7 +241,7 @@ namespace Dhs5.SceneCreation
                 int key = default;
                 SceneVar item = default;
                 SceneVarType type;
-                uint sceneObjectID;
+                int sceneObjectID;
 
                 switch (operation)
                 {
@@ -251,7 +251,7 @@ namespace Dhs5.SceneCreation
                         key = reader.Read<int>();
                         type = (SceneVarType)reader.Read<byte>();
                         object obj = ReadObject(type, reader);
-                        sceneObjectID = reader.ReadUInt();
+                        sceneObjectID = reader.ReadInt();
                         if (!SceneState.TryGetSceneObject(sceneObjectID, out BaseSceneObject sender))
                         {
                             Debug.LogError("can't find baseSceneObject");

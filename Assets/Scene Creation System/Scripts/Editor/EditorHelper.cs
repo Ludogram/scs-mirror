@@ -73,11 +73,16 @@ namespace Dhs5.SceneCreation
             }
             manager.SetSceneVariablesSO(newSceneVars);
 
-            SceneClock clock = GameObject.FindObjectOfType<SceneClock>();
-            if (clock == null)
+            NetworkSceneVariablesContainer networkVarContainer = GameObject.FindObjectOfType<NetworkSceneVariablesContainer>();
+            if (networkVarContainer == null)
             {
-                SceneObjectCreator.CreateSceneClock(menuCommand);
+                SceneObjectCreator.CreateNetworkSceneVarContainer(menuCommand);
             }
+            //SceneClock clock = GameObject.FindObjectOfType<SceneClock>();
+            //if (clock == null)
+            //{
+            //    SceneObjectCreator.CreateSceneClock(menuCommand);
+            //}
 
             RefreshSceneObjects();
 
@@ -87,13 +92,13 @@ namespace Dhs5.SceneCreation
         [MenuItem("SCS/Setup/Refresh SceneObjects", priority = 403)]
         public static void RefreshSceneObjects()
         {
-            BaseSceneObject[] sceneObjects = GameObject.FindObjectsOfType<BaseSceneObject>();
+            BaseSceneObject[] sceneObjects = GameObject.FindObjectsOfType<BaseSceneObject>(true);
 
             if (sceneObjects.Length > 0)
             {
                 foreach (var sceneObject in sceneObjects)
                 {
-                    sceneObject.Refresh();
+                    sceneObject.Refresh(sceneObjects);
                 }
             }
             else
@@ -101,6 +106,31 @@ namespace Dhs5.SceneCreation
                 Debug.LogWarning("Can't find any SceneObject in current scene");
             }
         }
+        
+        [MenuItem("SCS/Setup/Give SceneManager to all", priority = 404)]
+        public static void GiveSceneManagerToAll()
+        {
+            BaseSceneObject[] sceneObjects = GameObject.FindObjectsOfType<BaseSceneObject>(true);
+
+            if (sceneObjects.Length > 0)
+            {
+                if (EditorUtility.DisplayDialog("Give the SceneManager of this scene to all SceneObjects ?",
+                "Make sure that only one SceneManager exist in all the currently loaded scenes before doing it or it could break dependencies.",
+                "Let's do it", "Cancel"))
+                {
+                    foreach (var sceneObject in sceneObjects)
+                    {
+                        sceneObject.GetSceneManager();
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Can't find any SceneObject in current scene");
+            }
+        }
+
+
         #endregion
 
         #region Get

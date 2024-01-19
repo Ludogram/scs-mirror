@@ -32,8 +32,15 @@ namespace Dhs5.SceneCreation
         private bool displayEvents;
         private bool displayRandoms;
 
+        private int currentPage;
+        private string[] pages = new string[] { "Dependencies", "Runtime State" };
 
         private void OnEnable()
+        {
+            sceneVariablesSO = EditorHelper.GetCurrentSceneVariablesSO();
+            rebuildDependencies = true;
+        }
+        private void OnFocus()
         {
             sceneVariablesSO = EditorHelper.GetCurrentSceneVariablesSO();
             rebuildDependencies = true;
@@ -44,86 +51,109 @@ namespace Dhs5.SceneCreation
             currentPosition = EditorGUILayout.BeginScrollView(currentPosition);
             EditorGUILayout.BeginVertical();
 
-            // ----- Scene Dependencies -----
-            if (sceneVariablesSO != null)
+            currentPage = GUILayout.SelectionGrid(currentPage, pages, 2);
+
+            switch (currentPage)
             {
-                EditorGUI.DropShadowLabel(EditorGUILayout.GetControlRect(false, 20f), "Scene Dependencies");
-                EditorGUILayout.Space(10f);
-
-                // Choose Scene Var
-                List<SceneVar> sceneVarList = sceneVariablesSO.SceneVars;
-                if (sceneVarList.IsValid())
-                {
-                    int sceneVarIndexSave = sceneVarList.GetIndexByUniqueID(currentUID);
-                    if (sceneVarIndexSave == -1) sceneVarIndexSave = 0;
-
-                    // SceneVar choice popup
-                    int sceneVarIndex = EditorGUILayout.Popup(sceneVarIndexSave, sceneVarList.VarStrings().ToArray());
-                    if (sceneVarList.GetUniqueIDByIndex(sceneVarIndex) == 0) sceneVarIndex = sceneVarIndexSave;
-                    int newUID = sceneVarList.GetUniqueIDByIndex(sceneVarIndex);
-                    if (rebuildDependencies || newUID != currentUID)
-                    {
-                        currentUID = newUID;
-                        rebuildDependencies = false;
-                        if (currentUID != 0)
-                        {
-                            CreateDependantsList(currentUID);
-                        }
-                    }
-
-                    // Display List
-                    if (currentUID != 0)
-                    {
-                        dependantsList?.DoLayoutList();
-                    }
-                }
-            }
-
-            if (Application.isPlaying)
-            {
-                // ----- Runtime Scene Vars -----
-                EditorGUI.DropShadowLabel(EditorGUILayout.GetControlRect(false, 20f), "Runtime Scene Vars");
-
-                EditorGUILayout.Space();
-
-                EditorGUILayout.LabelField("Filters");
-                // Type
-                EditorGUILayout.BeginHorizontal();
-                filterByType = EditorGUILayout.ToggleLeft("Filter by type", filterByType);
-                if (filterByType)
-                {
-                    typeFilter = (SceneVarType)EditorGUILayout.EnumPopup("Type Filter", typeFilter);
-                }
-                EditorGUILayout.EndHorizontal();
-                // Statics
-                displayStatics = EditorGUILayout.ToggleLeft("Display Statics", displayStatics);
-                // Events
-                displayEvents = EditorGUILayout.ToggleLeft("Display Events", displayEvents);
-                // Randoms
-                displayRandoms = EditorGUILayout.ToggleLeft("Display Randoms", displayRandoms);
-
-                EditorGUILayout.Space();
-
-                SceneVar sceneVar;
-                foreach (var pair in SceneState.GetCurrentSceneVars())
-                {
-                    sceneVar = pair.Value;
-                    if ((!filterByType || sceneVar.type == typeFilter)
-                        && (displayStatics || !sceneVar.IsStatic)
-                        && (displayEvents || sceneVar.type != SceneVarType.EVENT)
-                        && (displayRandoms || (!sceneVar.IsRandom && !sceneVar.IsLinkRandom)))
-                    {
-                        EditorGUILayout.BeginHorizontal();
-
-                        EditorGUILayout.LabelField(pair.Value.RuntimeCompleteString());
-
-                        EditorGUILayout.EndHorizontal();
-                    }
-                }
+                case 0:
+                    DisplayDependants();
+                    break;
+                case 1:
+                    DisplayRuntimeState();
+                    break;
             }
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndScrollView();
+        }
+
+        private void DisplayRuntimeState()
+        {
+            // ----- Runtime Scene Vars -----
+            EditorGUI.DropShadowLabel(EditorGUILayout.GetControlRect(false, 20f), "Runtime Scene Vars");
+
+            EditorGUILayout.Space();
+
+            if (!Application.isPlaying)
+            {
+                EditorGUILayout.HelpBox("Application is not playing", MessageType.Error);
+                return;
+            }
+
+            EditorGUILayout.LabelField("Filters");
+            // Type
+            EditorGUILayout.BeginHorizontal();
+            filterByType = EditorGUILayout.ToggleLeft("Filter by type", filterByType);
+            if (filterByType)
+            {
+                typeFilter = (SceneVarType)EditorGUILayout.EnumPopup("Type Filter", typeFilter);
+            }
+            EditorGUILayout.EndHorizontal();
+            // Statics
+            displayStatics = EditorGUILayout.ToggleLeft("Display Statics", displayStatics);
+            // Events
+            displayEvents = EditorGUILayout.ToggleLeft("Display Events", displayEvents);
+            // Randoms
+            displayRandoms = EditorGUILayout.ToggleLeft("Display Randoms", displayRandoms);
+
+            EditorGUILayout.Space();
+
+            SceneVar sceneVar;
+            foreach (var pair in SceneState.GetCurrentSceneVars())
+            {
+                sceneVar = pair.Value;
+                if ((!filterByType || sceneVar.type == typeFilter)
+                    && (displayStatics || !sceneVar.IsStatic)
+                    && (displayEvents || sceneVar.type != SceneVarType.EVENT)
+                    && (displayRandoms || (!sceneVar.IsRandom && !sceneVar.IsLinkRandom)))
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField(pair.Value.RuntimeCompleteString());
+
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
+        }
+
+        private void DisplayDependants()
+        {
+            EditorGUI.DropShadowLabel(EditorGUILayout.GetControlRect(false, 20f), "Scene Dependencies");
+            EditorGUILayout.Space(10f);
+
+            if (sceneVariablesSO == null)
+            {
+                EditorGUILayout.HelpBox("Can't find SceneVariablesSO in scene", MessageType.Error);
+                return;
+            }
+
+            // Choose Scene Var
+            List<SceneVar> sceneVarList = sceneVariablesSO.SceneVars;
+            if (sceneVarList.IsValid())
+            {
+                int sceneVarIndexSave = sceneVarList.GetIndexByUniqueID(currentUID);
+                if (sceneVarIndexSave == -1) sceneVarIndexSave = 0;
+
+                // SceneVar choice popup
+                int sceneVarIndex = EditorGUILayout.Popup(sceneVarIndexSave, sceneVarList.VarStrings().ToArray());
+                if (sceneVarList.GetUniqueIDByIndex(sceneVarIndex) == 0) sceneVarIndex = sceneVarIndexSave;
+                int newUID = sceneVarList.GetUniqueIDByIndex(sceneVarIndex);
+                if (rebuildDependencies || newUID != currentUID)
+                {
+                    currentUID = newUID;
+                    rebuildDependencies = false;
+                    if (currentUID != 0)
+                    {
+                        CreateDependantsList(currentUID);
+                    }
+                }
+
+                // Display List
+                if (currentUID != 0)
+                {
+                    dependantsList?.DoLayoutList();
+                }
+            }
         }
 
         private void CreateDependantsList(int UID)

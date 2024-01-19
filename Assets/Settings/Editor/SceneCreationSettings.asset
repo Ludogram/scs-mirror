@@ -94,6 +94,7 @@ MonoBehaviour:
     path: Assets/Scene Creation System/SceneVars
   _debugMode: 0
   sceneCreationPrefabs:
+    networkSceneVarContainerPrefab: {fileID: 1846812121246104231, guid: dcb8f0c439f2fb14e8fca6266f9767ce, type: 3}
     sceneManagerPrefab: {fileID: 2626548491275406242, guid: f6106367823cb444aaeed1c8b6430e4b, type: 3}
     sceneClockPrefab: {fileID: 1445389896236721321, guid: 680ddd9afc099204cb9d8bfeb0693663, type: 3}
     sceneObjectPrefab: {fileID: 6447064889421450952, guid: 283f5fe5160638443a30f3657e97bee7, type: 3}
@@ -171,58 +172,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cda7ef96f7c07d48a703ffbc9dee744, type: 3}
   m_Name: IntersceneVars(Clone)
   m_EditorClassIdentifier: 
-  sceneVars:
-  - uniqueID: 10811
-    ID: Global/bool 1
-    type: 0
-    boolValue: 0
-    intValue: 0
-    floatValue: 0
-    stringValue: 
-    hasMin: 0
-    hasMax: 0
-    minInt: 0
-    maxInt: 0
-    minFloat: 0
-    maxFloat: 0
-    isStatic: 0
-    isRandom: 0
-    isLink: 0
-    isGlobal: 1
-    propertyHeight: 0
-  - uniqueID: 10271
-    ID: Global/float 1
-    type: 2
-    boolValue: 0
-    intValue: 0
-    floatValue: 5.87
-    stringValue: 
-    hasMin: 0
-    hasMax: 0
-    minInt: 0
-    maxInt: 0
-    minFloat: 0
-    maxFloat: 0
-    isStatic: 0
-    isRandom: 0
-    isLink: 0
-    isGlobal: 1
-    propertyHeight: 0
-  - uniqueID: 10387
-    ID: Global/int 1
-    type: 1
-    boolValue: 0
-    intValue: 3
-    floatValue: 0
-    stringValue: 
-    hasMin: 0
-    hasMax: 0
-    minInt: 0
-    maxInt: 0
-    minFloat: 0
-    maxFloat: 0
-    isStatic: 0
-    isRandom: 0
-    isLink: 0
-    isGlobal: 1
-    propertyHeight: 0
+  sceneVars: []

@@ -131,6 +131,7 @@ namespace Dhs5.SceneCreation
     public struct SceneCreationBasePrefabs
     {
         [Header("Base")]
+        public GameObject networkSceneVarContainerPrefab;
         public GameObject sceneManagerPrefab;
         public GameObject sceneClockPrefab;
         public GameObject sceneObjectPrefab;

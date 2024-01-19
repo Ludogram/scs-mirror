@@ -14,54 +14,52 @@ namespace Dhs5.SceneCreation
 {
     public class SceneManager : BaseSceneObject
     {
-        #region Singleton
-        public static SceneManager Instance { get; private set; }
-        protected override void OnSceneObjectAwake()
-        {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
+        #region Registration
 
-            base.OnSceneObjectAwake();
+        protected override void OnSceneObjectEnable()
+        {
+            base.OnSceneObjectEnable();
+
+            NetworkSceneVariablesContainer.Register(this);
+        }
+        protected override void OnSceneObjectDisable()
+        {
+            base.OnSceneObjectDisable();
+
+            NetworkSceneVariablesContainer.Unregister(this);
         }
 
-
-        public static IntersceneVariablesSO IntersceneVariables
-        {
-            get
-            {
-                if (Instance != null) return Instance.SceneVariablesSO.IntersceneVariables;
-                Debug.LogError("No SceneManager Instance in the scene");
-                return null;
-            }
-        }
-        public static new SceneObjectSettings Settings
-        {
-            get
-            {
-                if (Instance != null) return Instance.SceneVariablesSO.Settings;
-                Debug.LogError("No SceneManager Instance in the scene");
-                return null;
-            }
-        }
         #endregion
 
-        [SerializeField] private NetworkSceneVariablesContainer _networkSceneVarContainer;
+        #region ID Range
 
-        public static NetworkSceneVariablesContainer NewtorkSceneVarContainer
+        [SerializeField] private Vector2Int _sceneObjectsIDRange;
+        public Vector2Int IDRange => _sceneObjectsIDRange;
+
+        internal void FixIDRange()
         {
-            get
+            Vector2Int previousRange = _sceneObjectsIDRange;
+            _sceneObjectsIDRange = new Vector2Int(1, 1000);
+            Debug.LogError("Had to fix " + name + " ID range from " + previousRange + " to " + _sceneObjectsIDRange);
+
+            Refresh();
+        }
+
+        protected override void OnSceneObjectValidate()
+        {
+            base.OnSceneObjectValidate();
+
+            if (!PrefabUtility.IsPartOfPrefabAsset(gameObject) && (IDRange.x >= IDRange.y || IDRange.x < 0))
             {
-                if (Instance == null) return null;
-                return Instance._networkSceneVarContainer;
+                FixIDRange();
             }
         }
+
+        #endregion
 
         public override string DisplayName => "Scene Manager";
 
+        [Header("Main Game Events")]
         [Tooltip("Events called when the Scene starts,\n just before every SceneObject.OnStartScene()")]
         [SerializeField] protected List<SceneEvent> onSceneStart;
         [Tooltip("Events called when the Scene is going to change,\n just before every SceneObject.OnChangeScene()")]
@@ -97,11 +95,6 @@ namespace Dhs5.SceneCreation
             StartScene();
         }
 
-        protected virtual void Update()
-        {
-            UpdateScene();
-        }
-
         #region SceneObject Extension
         protected override void UpdateSceneVariables()
         {
@@ -118,17 +111,9 @@ namespace Dhs5.SceneCreation
 
 
         #region Scene Main Events
-        public int FrameIndex { get; private set; }
-        protected virtual void UpdateScene()
-        {
-            SceneState.UpdateScene(FrameIndex);
-            FrameIndex++;
-        }
 
         protected virtual void StartScene()
         {
-            FrameIndex = 0;
-
             onSceneStart.Trigger();
             SceneState.StartScene();
 
@@ -204,6 +189,8 @@ namespace Dhs5.SceneCreation
         #endregion
 
         #region Editor
+
+#if UNITY_EDITOR
         /// <summary>
         /// !!! EDITOR FUNCTION !!! 
         /// Do not use at runtime !
@@ -211,10 +198,24 @@ namespace Dhs5.SceneCreation
         /// <param name="_sceneVariablesSO"></param>
         internal void SetSceneVariablesSO(SceneVariablesSO _sceneVariablesSO)
         {
-#if UNITY_EDITOR
+
             sceneVariablesSO = _sceneVariablesSO;
-#endif
         }
+
+        public void DebugSceneEventManagerListeners()
+        {
+            SceneEventManager.DebugListeners();
+        }
+        public void DebugRegisteredSceneObjects()
+        {
+            SceneState.DebugRegisteredSceneObjects();
+        }
+        public void DebugSceneVariables()
+        {
+            SceneState.DebugSceneVariables();
+        }
+#endif
+        
         #endregion
     }
 }

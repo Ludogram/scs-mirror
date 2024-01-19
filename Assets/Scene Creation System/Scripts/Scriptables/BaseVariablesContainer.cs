@@ -36,22 +36,25 @@ namespace Dhs5.SceneCreation
             sceneVars.Add(new(GenerateUniqueID(), type));
         }
 
-        public void TryRemoveSceneVarAtIndex(int index)
+        public bool TryRemoveSceneVarAtIndex(int index)
         {
             if (sceneVars.IsIndexValid(index))
             {
                 if (!sceneVars[index].IsLink)
                 {
                     sceneVars.RemoveAt(index);
+                    return true;
                 }
                 else
                 {
                     Debug.LogError("Can't remove link");
+                    return false;
                 }
             }
             else
             {
                 Debug.LogError("Invalid index");
+                return false;
             }
         }
         protected virtual void RemoveSceneVar(SceneVar var)

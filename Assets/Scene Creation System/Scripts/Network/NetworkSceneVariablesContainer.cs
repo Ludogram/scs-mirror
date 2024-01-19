@@ -1,26 +1,93 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace Dhs5.SceneCreation
 {
+    [RequireComponent(typeof(NetworkIdentity))]
     public class NetworkSceneVariablesContainer : NetworkBehaviour
     {
-        [SerializeField] private SceneManager sceneManager;
+        #region Singleton
+
+        private static NetworkSceneVariablesContainer instance;
+        public static NetworkSceneVariablesContainer Instance
+        {
+            get
+            {
+                if (instance == null) instance = FindObjectOfType<NetworkSceneVariablesContainer>();
+                if (instance == null) Debug.LogError("Can't find any NetworkSceneVariablesContainer in the scene");
+                return instance;
+            }
+            private set => instance = value;
+        }
+
+        private void Awake()
+        {
+            if (instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+
+            Init();
+        }
+
+        #endregion
+
+        #region Scene Managers Registration
+
+        public static void Register(SceneManager sceneManager)
+        {
+            if (Instance.sceneManagers.Contains(sceneManager))
+            {
+                Debug.LogError(sceneManager + " is already registered", Instance);
+                return;
+            }
+            Instance.sceneManagers.Add(sceneManager);
+
+            if (Instance.netIdentity.clientStarted)
+            {
+                sceneManager.StartNetworkScene();
+            }
+        }
+        public static void Unregister(SceneManager sceneManager)
+        {
+            if (Instance.sceneManagers.Contains(sceneManager))
+            {
+                Instance.sceneManagers.Remove(sceneManager);
+
+                foreach (var sv in sceneManager.SceneVariablesSO.SceneVars)
+                {
+                    Instance.RemoveVar(sv.uniqueID);
+                }
+            }
+        }
+
+        #endregion
+
+        private List<SceneManager> sceneManagers = new();
 
         private VarNetworkDictionnary SceneVariables = new();
         private Dictionary<int, ComplexSceneVar> ComplexSceneVariables = new();
         private Dictionary<int, List<int>> SceneVarLinks = new();
         private Dictionary<int, object> FormerValues = new();
 
+        private void Init()
+        {
+            
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
 
             SceneVariables.Callback += OnStateChange;
-            sceneManager.StartNetworkScene();
+
+            foreach (var sceneManager in sceneManagers)
+                sceneManager.StartNetworkScene();
         }
 
         private void OnStateChange(VarNetworkDictionnary.Operation op, int key, SceneVar item)
@@ -31,11 +98,27 @@ namespace Dhs5.SceneCreation
 
         #region Scene Var Management
 
-        public void Clear()
+        private void RemoveVar(int uniqueID)
         {
-            SceneVariables.Clear();
-            ComplexSceneVariables.Clear();
-            SceneVarLinks.Clear();
+            if (SceneVariables.ContainsKey(uniqueID))
+            {
+                SceneVariables.Remove(uniqueID);
+            }
+            if (SceneVarLinks.ContainsKey(uniqueID))
+            {
+                foreach (var complexUID in SceneVarLinks[uniqueID])
+                {
+                    RemoveComplexVar(complexUID);
+                }
+                SceneVarLinks.Remove(uniqueID);
+            }
+        }
+        private void RemoveComplexVar(int uniqueID)
+        {
+            if (ComplexSceneVariables.ContainsKey(uniqueID))
+            {
+                ComplexSceneVariables.Remove(uniqueID);
+            }
         }
 
         public void AddVar(SceneVar variable)
@@ -134,11 +217,6 @@ namespace Dhs5.SceneCreation
 
         public SceneVar GetSceneVar(int uniqueID)
         {
-            if (IntersceneState.IsGlobalVar(uniqueID))
-            {
-                return IntersceneState.GetSceneVar(uniqueID);
-            }
-
             if (SceneVariables.ContainsKey(uniqueID))
             {
                 return new SceneVar(SceneVariables[uniqueID]);
@@ -256,12 +334,6 @@ namespace Dhs5.SceneCreation
 
         public void ModifyBoolVar(int varUniqueID, BoolOperation op, bool param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyBoolVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
             if (CanModifyVar(varUniqueID, SceneVarType.BOOL, out SceneVar var))
             {
                 SaveFormerValues();
@@ -276,12 +348,6 @@ namespace Dhs5.SceneCreation
         }
         public void ModifyIntVar(int varUniqueID, IntOperation op, int param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyIntVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
             if (CanModifyVar(varUniqueID, SceneVarType.INT, out SceneVar var))
             {
                 SaveFormerValues();
@@ -295,12 +361,6 @@ namespace Dhs5.SceneCreation
         }
         public void ModifyFloatVar(int varUniqueID, FloatOperation op, float param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyFloatVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
             if (CanModifyVar(varUniqueID, SceneVarType.FLOAT, out SceneVar var))
             {
                 SaveFormerValues();
@@ -314,12 +374,6 @@ namespace Dhs5.SceneCreation
         }
         public void ModifyStringVar(int varUniqueID, StringOperation op, string param, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.ModifyStringVar(varUniqueID, op, param, sender, context);
-                return;
-            }
-
             if (CanModifyVar(varUniqueID, SceneVarType.STRING, out SceneVar var))
             {
                 SaveFormerValues();
@@ -333,12 +387,6 @@ namespace Dhs5.SceneCreation
         }
         public void TriggerEventVar(int varUniqueID, BaseSceneObject sender, SceneContext context)
         {
-            if (IntersceneState.IsGlobalVar(varUniqueID))
-            {
-                IntersceneState.TriggerEventVar(varUniqueID, sender, context);
-                return;
-            }
-
             if (CanModifyVar(varUniqueID, SceneVarType.EVENT, out SceneVar var))
             {
                 SaveFormerValues();
@@ -584,6 +632,18 @@ namespace Dhs5.SceneCreation
         {
             Debug.LogError("Variable UID : '" + UID + "' is not of type : '" + type.ToString() + "'.");
         }
+        #endregion
+
+        #region Debug
+
+        public void DebugSceneVariables()
+        {
+            foreach (var kvp in SceneVariables)
+            {
+                Debug.Log(kvp.Value.RuntimeString());
+            }
+        }
+
         #endregion
     }
 }

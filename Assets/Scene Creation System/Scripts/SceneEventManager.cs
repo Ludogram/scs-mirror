@@ -122,6 +122,11 @@ namespace Dhs5.SceneCreation
         private static Dictionary<int, Action<SceneEventParam>> eventDico = new();
 
 
+        public static void Clear()
+        {
+            eventDico.Clear();
+        }
+
         public static void StartListening(int keyEvent, Action<SceneEventParam> listener)
         {
             if (eventDico.ContainsKey(keyEvent))
@@ -139,6 +144,11 @@ namespace Dhs5.SceneCreation
             if (eventDico.ContainsKey(keyEvent))
             {
                 eventDico[keyEvent] -= listener;
+
+                if (eventDico[keyEvent] == null)
+                {
+                    eventDico.Remove(keyEvent);
+                }
             }
         }
 
@@ -149,5 +159,21 @@ namespace Dhs5.SceneCreation
                 thisEvent?.Invoke(param);
             }
         }
+
+        #region Debug
+
+        public static int Count()
+        {
+            return eventDico.Count;
+        }
+        public static void DebugListeners()
+        {
+            foreach (var kvp in eventDico)
+            {
+                Debug.Log(kvp.Key);
+            }
+        }
+
+        #endregion
     }
 }
