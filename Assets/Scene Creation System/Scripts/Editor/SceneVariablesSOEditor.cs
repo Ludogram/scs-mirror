@@ -57,7 +57,7 @@ namespace Dhs5.SceneCreation
             SerializedProperty uidRangeProperty = serializedObject.FindProperty("uidRange");
             Vector2Int range = EditorGUILayout.Vector2IntField(new GUIContent("UID Range","Min inclusive, Max exclusive"), uidRangeProperty.vector2IntValue);
             int x = Mathf.Max(1, range.x);
-            range = new Vector2Int(x, Mathf.Max(x + 999, range.y));
+            range = new Vector2Int(x, Mathf.Clamp(range.y, x + 99, x + 999));
             uidRangeProperty.vector2IntValue = range;
             if (GUILayout.Button("Fix UIDs not in range"))
             {

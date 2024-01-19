@@ -49,9 +49,9 @@ MonoBehaviour:
     isLink: 0
     isGlobal: 0
     propertyHeight: 0
-  - uniqueID: 6427
-    ID: New Complex Var
-    type: 1
+  - uniqueID: 503
+    ID: New Scene Var
+    type: 0
     boolValue: 0
     intValue: 0
     floatValue: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
     maxFloat: 0
     isStatic: 0
     isRandom: 0
-    isLink: 1
+    isLink: 0
     isGlobal: 0
     propertyHeight: 0
   intersceneVariablesSO: {fileID: 2931021990422469653, guid: f62f165c943adfc4fa080ebb6a56e229, type: 2}
@@ -81,4 +81,5 @@ MonoBehaviour:
     propertyHeight: 0
   currentPage: 0
   currentBalancingSheetIndex: 0
+  uidRange: {x: 1, y: 1000}
   sceneBalancingSheets: []

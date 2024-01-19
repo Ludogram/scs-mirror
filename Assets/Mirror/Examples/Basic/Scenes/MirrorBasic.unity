@@ -1050,6 +1050,91 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 864730912}
   m_CullTransparentMesh: 0
+--- !u!1 &971597395
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 971597397}
+  - component: {fileID: 971597396}
+  m_Layer: 0
+  m_Name: Test SO2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &971597396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971597395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0a5dc0abf876804a9315ca846098fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 157
+  sceneObjectTag:
+    _value: 0
+  sceneObjectLayer:
+    _value: 0
+  currentPage: 0
+  onDeadEvent: []
+  simpleListener: []
+  specificListener: []
+  intVarTween:
+    type: 1
+    sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+    sceneVarUniqueID: 173
+    anyVar: 0
+    canBeInactive: 1
+    isActive: 1
+    canBeStatic: 0
+    isStatic: 0
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    forbiddenUID: 0
+    propertyHeight: 0
+  boolVarTween:
+    type: 0
+    sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+    sceneVarUniqueID: 503
+    anyVar: 0
+    canBeInactive: 0
+    isActive: 1
+    canBeStatic: 1
+    isStatic: 1
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    forbiddenUID: 0
+    propertyHeight: 0
+--- !u!4 &971597397
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971597395}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1193349415
 GameObject:
   m_ObjectHideFlags: 0
@@ -1282,74 +1367,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0a5dc0abf876804a9315ca846098fea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 787
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 2266055731346766551}
   currentPage: 0
-  onDead:
-  - eventID: 
-    sceneConditions:
-      list: []
-    sceneActions:
-      list:
-      - sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
-        var1UniqueID: 173
-        SceneVar2:
-          type: 1
-          sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
-          sceneVarUniqueID: 173
-          anyVar: 0
-          canBeInactive: 0
-          isActive: 1
-          canBeStatic: 1
-          isStatic: 0
-          boolValue: 0
-          intValue: 0
-          floatValue: 0
-          stringValue: 
-          forbiddenUID: 0
-          propertyHeight: 0
-        var2Type: 1
-        boolOP: 0
-        intOP: 0
-        floatOP: 0
-        stringOP: 0
-    sceneParameteredEvents:
-      list: []
-    details:
-      debug: 0
-      limitedTrigger: 0
-      maxTriggerCount: 0
-    page: 0
-    propertyHeight: 198.3
-    unityEvent:
-      m_PersistentCalls:
-        m_Calls: []
-  listener:
-  - sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
-    varUniqueID: 173
-    condition:
-      hasCondition: 0
-      layerCheck: 0
-      layerMask:
-        _value: 0
-      tagCheck: 0
-      tagMask:
-        _value: 0
-      sceneConditions: []
-    debug: 0
-    initialTrigger: 0
-    propertyHeight: 210.5
-    events:
-      m_PersistentCalls:
-        m_Calls: []
-    triggers: []
+  onDeadEvent: []
+  simpleListener: []
+  specificListener: []
+  intVarTween:
+    type: 1
+    sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+    sceneVarUniqueID: 0
+    anyVar: 0
+    canBeInactive: 1
+    isActive: 0
+    canBeStatic: 0
+    isStatic: 0
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    forbiddenUID: 0
+    propertyHeight: 0
+  boolVarTween:
+    type: 0
+    sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+    sceneVarUniqueID: 0
+    anyVar: 0
+    canBeInactive: 0
+    isActive: 1
+    canBeStatic: 1
+    isStatic: 1
+    boolValue: 0
+    intValue: 0
+    floatValue: 0
+    stringValue: 
+    forbiddenUID: 0
+    propertyHeight: 0
 --- !u!114 &1516794000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1452,15 +1510,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1042d64ec99bf6f499656fd2a451f63b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 897
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 2266055731346766551}
   currentPage: 0
   sceneListeners:
   - sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
@@ -1884,7 +1940,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  sceneManager: {fileID: 2266055731346766551}
 --- !u!114 &2038316840500313816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1897,15 +1952,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec5b20e55ba52d46b3a4dccdb23d815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 357
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 2266055731346766551}
   currentPage: 0
   sceneListeners: []
   sceneEvents:
@@ -1959,17 +2012,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb1a5b660ba1b5d46bc849bd3268842c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 188
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 0}
   currentPage: 0
-  _networkSceneVarContainer: {fileID: 2084483287}
+  _sceneObjectsIDRange: {x: 1, y: 1000}
   onSceneStart: []
   onSceneChange: []
   onSceneComplete: []
@@ -2001,15 +2052,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ff0bf4ffb9c65f46a646d81278e8c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   sceneVariablesSO: {fileID: 11400000, guid: d5bf2df0c3d93154092bdb2d1c2e96af, type: 2}
+  sceneManager: {fileID: 2266055731346766551}
+  sceneObjectID: 376
   sceneObjectTag:
     _value: 0
   sceneObjectLayer:
     _value: 0
-  sceneManager: {fileID: 2266055731346766551}
   currentPage: 0
   sceneTimelines:
     list: []
@@ -2168,3 +2217,4 @@ SceneRoots:
   - {fileID: 1631762947}
   - {fileID: 2084483285}
   - {fileID: 1516794001}
+  - {fileID: 971597397}
