@@ -19,11 +19,6 @@ namespace Dhs5.SceneCreation
 #if UNITY_EDITOR
                 return SceneCreationSettings.instance.SceneObjectSettings;
 #else
-                if (Application.isPlaying)
-                {
-                    return SceneManager.Settings;
-                }
-
                 return null;
 #endif
             }

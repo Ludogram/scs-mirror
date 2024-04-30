@@ -45,7 +45,7 @@ namespace Dhs5.SceneCreation
 
         public virtual string DisplayName => "BaseSceneObject";
 
-        protected SceneObjectSettings Settings => sceneVariablesSO != null ? sceneVariablesSO.Settings : null;
+        protected internal SceneObjectSettings Settings => sceneVariablesSO != null ? sceneVariablesSO.Settings : null;
 
         #region Private Editor References
 

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.Scripting;
 using Mirror;
 
 #if UNITY_EDITOR
@@ -36,6 +34,7 @@ namespace Dhs5.SceneCreation
         [SerializeField] private Vector2Int _sceneObjectsIDRange;
         public Vector2Int IDRange => _sceneObjectsIDRange;
 
+#if UNITY_EDITOR
         internal void FixIDRange()
         {
             Vector2Int previousRange = _sceneObjectsIDRange;
@@ -54,6 +53,7 @@ namespace Dhs5.SceneCreation
                 FixIDRange();
             }
         }
+#endif
 
         #endregion
 
