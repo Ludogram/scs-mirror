@@ -15,7 +15,7 @@ namespace Dhs5.SceneCreation
         {
             get
             {
-                if (instance == null) instance = FindObjectOfType<NetworkSceneVariablesContainer>();
+                if (instance == null) instance = FindObjectOfType<NetworkSceneVariablesContainer>(true);
                 if (instance == null) Debug.LogError("Can't find any NetworkSceneVariablesContainer in the scene");
                 return instance;
             }
